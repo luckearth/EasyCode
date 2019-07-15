@@ -105,18 +105,17 @@ namespace EasyCode.Core.Infrastructure
                 .OrderBy(mapperConfiguration => mapperConfiguration.Order);
 
             //create AutoMapper configuration
-            var config = new MapperConfiguration(cfg => {
+            var config = new MapperConfiguration(cfg =>
+            {
                 foreach (var instance in instances)
                 {
                     cfg.AddProfile(instance.GetType());
                 }
             });
 
-            //register AutoMapper
-            services.AddAutoMapper();
-
             //register
             AutoMapperConfiguration.Init(config);
+
         }
 
         #endregion
