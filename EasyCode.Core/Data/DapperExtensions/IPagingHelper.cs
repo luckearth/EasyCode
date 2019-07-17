@@ -4,8 +4,8 @@ using System.Text;
 
 namespace EasyCode.Core.Data.DapperExtensions
 {
-    public interface ISessionFactory
+    public interface IPagingHelper
     {
-        ISession GetSession(string name = "DefaultSource");
+        bool SplitSQL(string sql, out SQLParts parts);
     }
 }

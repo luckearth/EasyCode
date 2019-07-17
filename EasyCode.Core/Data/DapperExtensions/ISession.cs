@@ -6,8 +6,9 @@ using Dapper;
 
 namespace EasyCode.Core.Data.DapperExtensions
 {
-    interface ISession
+    public interface ISession: IDisposable
     {
+        PagedList<T> Paged<T>(string sql, int pageIndex, int pageSize, object param = null);
         int Execute(string sql, object param = null, CommandType? commandType = null, int? commandTimeout = 0);
 
         IEnumerable<T> Query<T>(string sql, object param = null, CommandType? commandType = null, int? commandTimeout = 0);
