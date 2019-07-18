@@ -4,4 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyCode.Core\EasyCode.Core.csproj" />
+    <ProjectReference Include="..\EasyCode.Entity\EasyCode.Entity.csproj" />
+  </ItemGroup>
+
 </Project>
