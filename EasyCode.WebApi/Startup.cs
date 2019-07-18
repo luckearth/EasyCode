@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using EasyCode.Core.Data.DapperExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,6 +28,14 @@ namespace EasyCode.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<ISessionFactory, SessionFactory>();
+            SessionFactory.AddDataSource(new DataSource()
+            {
+                Source = () => new SqlConnection()
+                {
+                    ConnectionString = Configuration.GetConnectionString("SqlConnection"),
+                }
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
