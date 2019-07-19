@@ -10,12 +10,18 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.5.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.7.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasyCode.Core\EasyCode.Core.csproj" />
     <ProjectReference Include="..\EasyCode.Data\EasyCode.Data.csproj" />
+    <ProjectReference Include="..\EasyCode.Entity\EasyCode.Entity.csproj" />
+    <ProjectReference Include="..\EasyCode.IService\EasyCode.IService.csproj" />
+    <ProjectReference Include="..\EasyCode.Service\EasyCode.Service.csproj" />
+    <ProjectReference Include="..\EasyCode.ViewModel\EasyCode.ViewModel.csproj" />
+    <ProjectReference Include="..\EasyCode.WebFramework\EasyCode.WebFramework.csproj" />
   </ItemGroup>
 
 </Project>
