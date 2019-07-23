@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EasyCode.Data
 {
-    public class LiteCodeContext : IdentityDbContext<SysUsers, SysRoles, string>
+    public class EasyCodeContext : IdentityDbContext<SysUsers, SysRoles, string>
     {
-        public LiteCodeContext(DbContextOptions<LiteCodeContext> options) : base(options)
+        public EasyCodeContext(DbContextOptions<EasyCodeContext> options) : base(options)
         {
 
         }

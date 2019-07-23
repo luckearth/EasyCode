@@ -7,7 +7,8 @@ namespace EasyCode.Entity
 {
     public class SysUserTokens : IdentityUserToken<string>
     {
-
+        public DateTime ExpiresUtc { get; set; }
+        public string Token { get; set; }
     }
     public class SysUsers : IdentityUser<string>
     {
