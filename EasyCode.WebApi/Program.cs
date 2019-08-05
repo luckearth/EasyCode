@@ -26,7 +26,7 @@ namespace EasyCode.WebApi
                 try
                 {
                     var userManager = services.GetRequiredService<UserManager<SysUsers>>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    var roleManager = services.GetRequiredService<RoleManager<SysRoles>>();
                     ApiDbSeedData.Seed(userManager, roleManager).Wait();
                 }
                 catch (Exception ex)

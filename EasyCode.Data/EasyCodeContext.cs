@@ -14,7 +14,7 @@ namespace EasyCode.Data
         {
 
         }
-
+        public DbSet<SysUserTokens> SysUserTokenses { get; set; }
         public DbSet<SysApplication> SysApplications { get; set; }
         public DbSet<SysModules> SysModuleses { get; set; }
 

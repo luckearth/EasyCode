@@ -14,18 +14,18 @@ namespace EasyCode.WebApi
 
         }
 
-        public static async Task Seed(UserManager<SysUsers> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task Seed(UserManager<SysUsers> userManager, RoleManager<SysRoles> roleManager)
         {
             await SeedRolesAndClaims(userManager, roleManager);
             await SeedAdmin(userManager);
         }
 
-        private static async Task SeedRolesAndClaims(UserManager<SysUsers> userManager, RoleManager<IdentityRole> roleManager)
+        private static async Task SeedRolesAndClaims(UserManager<SysUsers> userManager, RoleManager<SysRoles> roleManager)
         {
 
             if (!await roleManager.RoleExistsAsync("admin"))
             { 
-                await roleManager.CreateAsync(new IdentityRole
+                await roleManager.CreateAsync(new SysRoles
                 {
                     Name = "admin"
                 });
@@ -33,7 +33,7 @@ namespace EasyCode.WebApi
 
             if (!await roleManager.RoleExistsAsync("user"))
             {
-                await roleManager.CreateAsync(new IdentityRole
+                await roleManager.CreateAsync(new SysRoles
                 {
                     Name = "user"
                 });

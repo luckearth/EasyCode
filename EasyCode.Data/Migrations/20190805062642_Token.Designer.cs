@@ -4,14 +4,16 @@ using EasyCode.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EasyCode.Data.Migrations
 {
     [DbContext(typeof(EasyCodeContext))]
-    partial class EasyCodeContextModelSnapshot : ModelSnapshot
+    [Migration("20190805062642_Token")]
+    partial class Token
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

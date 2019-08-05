@@ -4,6 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using EasyCode.Core;
+using EasyCode.Core.Data;
+using EasyCode.Data;
+using EasyCode.Entity;
 using EasyCode.IService;
 using EasyCode.ViewModel;
 using Microsoft.Extensions.Options;
@@ -14,12 +17,15 @@ namespace EasyCode.Service
     public class TokenProviderService : ITokenProviderService
     {
         private TokenProviderOptions _options;
-        public TokenProviderService(IOptions<TokenProviderOptions> options)
+        private IUnitOfWork<EasyCodeContext> _unitOfWork;
+        public TokenProviderService(TokenProviderOptions options, IUnitOfWork<EasyCodeContext> unitOfWork)
         {
-            _options = options.Value;
+            _options = options;
+            _unitOfWork = unitOfWork;
         }
-        public ResponseTokenViewModel GeTokenViewModel(string username)
+        public ResponseTokenViewModel GeTokenViewModel(string username,string userid)
         {
+            var refreshtoken = Guid.NewGuid().ToString("N");
             var now = DateTime.UtcNow;
             
             var claims = new List<Claim>()
@@ -37,22 +43,24 @@ namespace EasyCode.Service
                 expires: now.AddMinutes(_options.Expiration),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey)), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
+            _unitOfWork.DbContext.SysUserTokenses.Add(new SysUserTokens(){ ExpiresUtc = DateTime.UtcNow,Token = encodedJwt,UserId = userid, Value = refreshtoken,LoginProvider = "",Name = username});
+            _unitOfWork.SaveChanges();
             ResponseTokenViewModel model = new ResponseTokenViewModel()
             {
                 access_token = encodedJwt,
-                refresh_token = Guid.NewGuid().ToString("N"),
+                refresh_token = refreshtoken,
                 expires_in = (int)TimeSpan.FromSeconds(_options.Expiration*60).TotalSeconds,
                 userName = username,
                 firstname = username,
                 lastname = username,
+                createtime = DateTime.Now
             };
             return model;
         }
 
         public ResponseTokenViewModel GetRefreshToken(string refreshToken)
         {
-            var model = GeTokenViewModel("");
+            var model = GeTokenViewModel("","");
             return model;
         }
     }

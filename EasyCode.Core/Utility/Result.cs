@@ -117,8 +117,8 @@ namespace EasyCode.Core.Utility
 
         [JsonIgnore]
         public List<string> ErrorMessages { get; } = new List<string>();
-
-        public virtual object Object
+        [JsonProperty("data")]
+        public virtual object Data
         {
             get; set;
         }
@@ -169,9 +169,9 @@ namespace EasyCode.Core.Utility
         public static JsonResult ToPagedResult(this Result res, int? total = null, IEnumerable items = null)
         {
 
-            if (res.Object is IPagedList)
+            if (res.Data is IPagedList)
             {
-                var paged = res.Object as IPagedList;
+                var paged = res.Data as IPagedList;
                 if (total == null)
                 {
                     total = paged.TotalCount;
@@ -184,7 +184,7 @@ namespace EasyCode.Core.Utility
             return new JsonResult(new
             {
                 total,
-                items = items ?? res.Object ?? Enumerable.Empty<string>(),
+                items = items ?? res.Data ?? Enumerable.Empty<string>(),
                 message = res.Message,
                 errors = res.ErrorMessages == null || res.ErrorMessages.Count == 0 ? null : res.ErrorMessages,
                 succeeded = res.Succeeded
