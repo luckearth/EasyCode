@@ -24,10 +24,16 @@ namespace EasyCode.WebApi.Controllers
         }
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<List<TestEntity>> Get()
         {
-            var items=_sessionFactory.GetSession().Query< TestEntity>("select * from Test");
-            return new string[] { "value1", "value2" };
+            var items=_sessionFactory.GetSession().Query< TestEntity>("select * from Test").ToList();
+            var list=new List<TestEntity>();
+            list.Add(new TestEntity(){Id=1,Name = "Hello1",CreateTime = DateTime.Now});
+            list.Add(new TestEntity() { Id = 2, Name = "Hello2", CreateTime = DateTime.Now });
+            list.Add(new TestEntity() { Id = 3, Name = "Hello3", CreateTime = DateTime.Now });
+            list.Add(new TestEntity() { Id = 4, Name = "Hello4", CreateTime = DateTime.Now });
+            list.Add(new TestEntity() { Id = 5, Name = "Hello5", CreateTime = DateTime.Now });
+            return items;
         }
 
         // GET api/values/5
