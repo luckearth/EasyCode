@@ -12,7 +12,7 @@ namespace EasyCode.IService
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        ResponseTokenViewModel GeTokenViewModel(string username);
+        ResponseTokenViewModel GeTokenViewModel(string username,string userid);
         /// <summary>
         /// 获取刷新token
         /// </summary>

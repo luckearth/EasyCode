@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EasyCode.Data
 {
-    public class LiteCodeContext : IdentityDbContext<SysUsers, SysRoles, string>
+    public class EasyCodeContext : IdentityDbContext<SysUsers, SysRoles, string>
     {
-        public LiteCodeContext(DbContextOptions<LiteCodeContext> options) : base(options)
+        public EasyCodeContext(DbContextOptions<EasyCodeContext> options) : base(options)
         {
 
         }
-
+        public DbSet<SysUserTokens> SysUserTokenses { get; set; }
         public DbSet<SysApplication> SysApplications { get; set; }
         public DbSet<SysModules> SysModuleses { get; set; }
 

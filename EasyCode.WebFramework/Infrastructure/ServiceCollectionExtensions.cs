@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EasyCode.Core;
 using EasyCode.Core.Configuration;
 using EasyCode.Core.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +15,7 @@ namespace EasyCode.WebFramework.Infrastructure
         public static IServiceProvider ConfigureApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            services.ConfigureStartupConfig<TokenProviderOptions>(configuration.GetSection("TokenProviderOptions"));
             services.ConfigureStartupConfig<LiteConfig>(configuration.GetSection("LiteConfig"));
             services.AddHttpContextAccessor();
             services.AddOptions();
