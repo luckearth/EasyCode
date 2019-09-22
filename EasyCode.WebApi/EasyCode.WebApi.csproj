@@ -17,16 +17,25 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.5.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.7.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.5.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasyCode.Core\EasyCode.Core.csproj" />
     <ProjectReference Include="..\EasyCode.Data\EasyCode.Data.csproj" />
     <ProjectReference Include="..\EasyCode.Entity\EasyCode.Entity.csproj" />
+    <ProjectReference Include="..\EasyCode.EventBusRabbitMQ\EasyCode.EventBusRabbitMQ.csproj" />
+    <ProjectReference Include="..\EasyCode.EventBus\EasyCode.EventBus.csproj" />
     <ProjectReference Include="..\EasyCode.IService\EasyCode.IService.csproj" />
     <ProjectReference Include="..\EasyCode.Service\EasyCode.Service.csproj" />
     <ProjectReference Include="..\EasyCode.ViewModel\EasyCode.ViewModel.csproj" />
     <ProjectReference Include="..\EasyCode.WebFramework\EasyCode.WebFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

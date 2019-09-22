@@ -4,7 +4,14 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using EasyCode.Core.Data.DapperExtensions;
+using EasyCode.EventBus;
+using EasyCode.EventBus.Abstractions;
+using EasyCode.EventBusRabbitMQ;
+using EasyCode.EventBusRabbitMQ.CommandBus;
+using EasyCode.WebApi.IntegrationEvents.EventHandling;
+using EasyCode.WebApi.IntegrationEvents.Events;
 using EasyCode.WebFramework.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +21,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NLog.Extensions.Logging;
+using NLog.LayoutRenderers;
+using RabbitMQ.Client;
 
 namespace EasyCode.WebApi
 {
@@ -37,14 +47,18 @@ namespace EasyCode.WebApi
                     ConnectionString = Configuration.GetConnectionString("SqlConnection"),
                 }
             });
+            services.AddIntegrationServices(Configuration)
+                    .AddEventBus(Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             var serviceProvider = services.ConfigureApplicationServices(Configuration);
             return serviceProvider;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddNLog();
+            LayoutRenderer.Register("basedir", (logEvent) => env.ContentRootPath);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -57,6 +71,54 @@ namespace EasyCode.WebApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            ConfigureEventBus(app);
+        }
+
+        protected virtual void ConfigureEventBus(IApplicationBuilder app)
+        {
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<ProductPriceChangedIntegrationEvent, ProductPriceChangedIntegrationEventHandler>();
+        }
+    }
+
+    public static class CustomExtensionMethods
+    {
+        public static IServiceCollection AddIntegrationServices(this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            {
+                //var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+                var factory = new ConnectionFactory()
+                {
+                    HostName = "192.168.3.6",
+                    DispatchConsumersAsync = true
+                };
+                factory.Port = 5672;
+                factory.UserName = "guest";
+                factory.Password = "guest";
+                var retryCount = 5;
+                return new DefaultRabbitMQPersistentConnection(factory,  retryCount);
+            });
+            return services;
+        }
+        public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton<IEventBus, RabbitMQEventBus>(sp =>
+            {
+                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+                var logger = sp.GetRequiredService<ILogger<RabbitMQEventBus>>();
+                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+                var retryCount = 5;
+                return new RabbitMQEventBus(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, "easyCode_Eventbus_all", retryCount);
+            });
+            
+            services.AddSingleton<ICommandBusClient, RabbitMqCommandClient>();
+            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+            services.AddTransient<ProductPriceChangedIntegrationEventHandler>();
+            services.AddSingleton<RequestHandlerService>();
+            return services;
         }
     }
 }

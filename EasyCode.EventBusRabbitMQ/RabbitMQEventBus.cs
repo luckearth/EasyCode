@@ -18,12 +18,12 @@ using System.Threading.Tasks;
 
 namespace EasyCode.EventBusRabbitMQ
 {
-    public class EventBusRabbitMQ : IEventBus, IDisposable
+    public class RabbitMQEventBus : IEventBus, IDisposable
     {
         const string BROKER_NAME = "easycode_event_bus";
 
         private readonly IRabbitMQPersistentConnection _persistentConnection;
-        private readonly ILogger<EventBusRabbitMQ> _logger;
+        private readonly ILogger<RabbitMQEventBus> _logger;
         private readonly IEventBusSubscriptionsManager _subsManager;
         private readonly ILifetimeScope _autofac;
         private readonly string AUTOFAC_SCOPE_NAME = "easycode_event_bus";
@@ -32,7 +32,7 @@ namespace EasyCode.EventBusRabbitMQ
         private IModel _consumerChannel;
         private string _queueName;
 
-        public EventBusRabbitMQ(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQ> logger,
+        public RabbitMQEventBus(IRabbitMQPersistentConnection persistentConnection, ILogger<RabbitMQEventBus> logger,
             ILifetimeScope autofac, IEventBusSubscriptionsManager subsManager, string queueName = null, int retryCount = 5)
         {
             _persistentConnection = persistentConnection ?? throw new ArgumentNullException(nameof(persistentConnection));

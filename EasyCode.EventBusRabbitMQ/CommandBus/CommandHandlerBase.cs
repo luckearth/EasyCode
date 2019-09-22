@@ -26,7 +26,7 @@ namespace EasyCode.EventBusRabbitMQ.CommandBus
                         {
                             StreamWriter writer = new StreamWriter(memoryStream);
                             serializer.Serialize(writer, response);
-                            memoryStream.Flush();
+                            writer.Flush();
                             responseBuffer = memoryStream.ToArray();
                         }
                     }

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace EasyCode.EventBus.Abstractions
 {
-    public interface ICommandBus
+    public interface ICommandBusClient
     {
-        Task<byte[]> GetResponse(string requestType, byte[] requestBuffer);
+        Task<byte[]> GetResponseAsync(string requestType, byte[] requestBuffer);
     }
 }

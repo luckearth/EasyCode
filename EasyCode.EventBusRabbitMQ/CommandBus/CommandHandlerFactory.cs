@@ -8,12 +8,12 @@ namespace EasyCode.EventBusRabbitMQ.CommandBus
 {
     public class CommandHandlerFactory:ICommandHandlerFactory
     {
-        private ILogger _logger;
+        //private ILogger _logger;
         private readonly Func<string ,ICommandHandler> _factory;
-        public CommandHandlerFactory(Func<string,ICommandHandler> factory,Logger<CommandHandlerFactory> logger)
+        public CommandHandlerFactory(Func<string,ICommandHandler> factory)
         {
             _factory = factory;
-            _logger = logger;
+            //_logger = logger;
         }
 
         public ICommandHandler CreateCommandHandler(string commandType)
@@ -23,7 +23,7 @@ namespace EasyCode.EventBusRabbitMQ.CommandBus
                 return _factory(commandType);
             }catch(Exception ex)
             {
-                _logger.LogError(ex.Message);
+               // _logger.LogError(ex.Message);
             }
             return null;
         }

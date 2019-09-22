@@ -23,9 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCode.WebSite", "EasyCod
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventBus", "EventBus", "{D7AE4999-AF07-4583-BB70-D90FA5382637}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCode.EventBus", "EasyCode.EventBus\EasyCode.EventBus.csproj", "{40C9FB13-31AB-4F68-B0EA-AF8F0321777A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCode.EventBus", "EasyCode.EventBus\EasyCode.EventBus.csproj", "{40C9FB13-31AB-4F68-B0EA-AF8F0321777A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCode.EventBusRabbitMQ", "EasyCode.EventBusRabbitMQ\EasyCode.EventBusRabbitMQ.csproj", "{833E0E8F-2D1D-4CD8-8B88-C0E826E8D871}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCode.EventBusRabbitMQ", "EasyCode.EventBusRabbitMQ\EasyCode.EventBusRabbitMQ.csproj", "{833E0E8F-2D1D-4CD8-8B88-C0E826E8D871}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCode.EventBusService", "EasyCode.EventBusService\EasyCode.EventBusService.csproj", "{5DE2BA14-ED83-4BB0-B7EF-D8B47DDC9F3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{833E0E8F-2D1D-4CD8-8B88-C0E826E8D871}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{833E0E8F-2D1D-4CD8-8B88-C0E826E8D871}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{833E0E8F-2D1D-4CD8-8B88-C0E826E8D871}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DE2BA14-ED83-4BB0-B7EF-D8B47DDC9F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DE2BA14-ED83-4BB0-B7EF-D8B47DDC9F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DE2BA14-ED83-4BB0-B7EF-D8B47DDC9F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DE2BA14-ED83-4BB0-B7EF-D8B47DDC9F3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

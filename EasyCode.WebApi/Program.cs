@@ -41,7 +41,7 @@ namespace EasyCode.WebApi
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://*:8080")
+                .UseIISIntegration()
                 .UseStartup<Startup>();
     }
 }
