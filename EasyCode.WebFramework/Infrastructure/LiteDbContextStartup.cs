@@ -28,13 +28,13 @@ namespace EasyCode.WebFramework.Infrastructure
             services.AddDbContextPool<EasyCodeContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("SqlConnection")));
             services.AddUnitOfWork<EasyCodeContext>();
-            services.AddIdentity<SysUsers, SysRoles>(opt =>
+            services.AddIdentityCore<SysUsers>(opt =>
             {
                 opt.Password.RequireDigit = false;
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequiredLength = 6;
-            }).AddEntityFrameworkStores<EasyCodeContext>().AddDefaultTokenProviders();
+            }).AddEntityFrameworkStores<EasyCodeContext>();
             services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
         }
     }

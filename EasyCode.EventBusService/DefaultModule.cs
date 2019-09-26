@@ -31,12 +31,12 @@ namespace EasyCode.EventBusService
                 //var logger = sp.Resolve<ILogger<DefaultRabbitMQPersistentConnection>>();
                 var factory = new ConnectionFactory()
                 {
-                    HostName = "192.168.3.6",
+                    HostName = "192.168.3.12",
                     
                 };
                 factory.Port = 5672;
-                factory.UserName = "guest";
-                factory.Password = "guest";
+                factory.UserName = "luckearth";
+                factory.Password = "dfs123";
                 var retryCount = 5;
                 return new DefaultRabbitMQPersistentConnection(factory,  retryCount);
             }).As<IRabbitMQPersistentConnection>().SingleInstance();

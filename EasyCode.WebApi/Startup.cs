@@ -17,8 +17,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NLog.Extensions.Logging;
@@ -49,13 +51,13 @@ namespace EasyCode.WebApi
             });
             services.AddIntegrationServices(Configuration)
                     .AddEventBus(Configuration);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             var serviceProvider = services.ConfigureApplicationServices(Configuration);
             return serviceProvider;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddNLog();
             LayoutRenderer.Register("basedir", (logEvent) => env.ContentRootPath);
@@ -70,7 +72,13 @@ namespace EasyCode.WebApi
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
             ConfigureEventBus(app);
         }
 
@@ -91,12 +99,12 @@ namespace EasyCode.WebApi
                 //var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
                 var factory = new ConnectionFactory()
                 {
-                    HostName = "192.168.3.6",
+                    HostName = "192.168.3.12",
                     DispatchConsumersAsync = true
                 };
                 factory.Port = 5672;
-                factory.UserName = "guest";
-                factory.Password = "guest";
+                factory.UserName = "luckearth";
+                factory.Password = "dfs123";
                 var retryCount = 5;
                 return new DefaultRabbitMQPersistentConnection(factory,  retryCount);
             });

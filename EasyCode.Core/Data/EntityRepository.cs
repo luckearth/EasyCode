@@ -111,7 +111,7 @@ namespace EasyCode.Core.Data
         public IQueryable<TEntity> FromSql(string sql, params object[] parameters)
         {
 
-            return Entities.FromSql(sql, parameters);
+            return Entities.FromSqlRaw(sql, parameters);
         }
 
         public async Task<List<TEntity>> ListAsync() => await Entities.AsNoTracking().ToListAsync();
