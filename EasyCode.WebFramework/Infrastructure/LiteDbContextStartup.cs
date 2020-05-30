@@ -28,6 +28,7 @@ namespace EasyCode.WebFramework.Infrastructure
             services.AddDbContextPool<EasyCodeContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("SqlConnection")));
             services.AddUnitOfWork<EasyCodeContext>();
+            //services.AddScoped<RoleManager<SysRoles>>();
             services.AddIdentityCore<SysUsers>(opt =>
             {
                 opt.Password.RequireDigit = false;
@@ -35,6 +36,7 @@ namespace EasyCode.WebFramework.Infrastructure
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequiredLength = 6;
             }).AddEntityFrameworkStores<EasyCodeContext>();
+            
             services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
         }
     }

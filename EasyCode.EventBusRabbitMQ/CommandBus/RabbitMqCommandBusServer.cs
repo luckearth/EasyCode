@@ -68,7 +68,7 @@ namespace EasyCode.EventBusRabbitMQ.CommandBus
                     try
                     {
                         //Console.WriteLine("我开始执行");
-                        var responseBuffer = await handler.HandleAsync(eventArgs.Body);
+                        var responseBuffer = await handler.HandleAsync(eventArgs.Body.ToArray());
                         var responseProperties = _model.CreateBasicProperties();
                         responseProperties.CorrelationId = eventArgs.BasicProperties.CorrelationId;
                         _model.BasicPublish("", eventArgs.BasicProperties.ReplyTo,responseProperties,responseBuffer);

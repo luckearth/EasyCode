@@ -14,9 +14,9 @@ namespace EasyCode.WebApi
 
         }
 
-        public static async Task Seed(UserManager<SysUsers> userManager, RoleManager<SysRoles> roleManager)
+        public static async Task Seed(UserManager<SysUsers> userManager)
         {
-            await SeedRolesAndClaims(userManager, roleManager);
+           // await SeedRolesAndClaims(userManager, roleManager);
             await SeedAdmin(userManager);
         }
 
@@ -74,13 +74,13 @@ namespace EasyCode.WebApi
                 };
                 var x = await userManager.CreateAsync(u, "Admin1234!");
             }
-            var uc = await userManager.GetClaimsAsync(u);
-            if (!uc.Any(x => x.Type == "admin"))
-            {
-                await userManager.AddClaimAsync(u, new System.Security.Claims.Claim("admin", true.ToString()));
-            }
-            if (!await userManager.IsInRoleAsync(u, "admin"))
-                await userManager.AddToRoleAsync(u, "admin");
+            //var uc = await userManager.GetClaimsAsync(u);
+            //if (!uc.Any(x => x.Type == "admin"))
+            //{
+            //    await userManager.AddClaimAsync(u, new System.Security.Claims.Claim("admin", true.ToString()));
+            //}
+            //if (!await userManager.IsInRoleAsync(u, "admin"))
+            //    await userManager.AddToRoleAsync(u, "admin");
         }
     }
 }

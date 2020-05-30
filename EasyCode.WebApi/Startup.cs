@@ -39,7 +39,7 @@ namespace EasyCode.WebApi
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISessionFactory, SessionFactory>();
             SessionFactory.AddDataSource(new DataSource()
@@ -49,17 +49,24 @@ namespace EasyCode.WebApi
                     ConnectionString = Configuration.GetConnectionString("SqlConnection"),
                 }
             });
-            services.AddIntegrationServices(Configuration)
-                    .AddEventBus(Configuration);
-            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            var serviceProvider = services.ConfigureApplicationServices(Configuration);
-            return serviceProvider;
+            //services.AddIntegrationServices(Configuration)
+            //        .AddEventBus(Configuration);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("any", builder =>
+                {
+                    builder.WithMethods("GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS")
+                    //.AllowCredentials()//指定处理cookie
+                .AllowAnyOrigin(); //允许任何来源的主机访问
+                });
+            });
+            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            loggerFactory.AddNLog();
+            
             LayoutRenderer.Register("basedir", (logEvent) => env.ContentRootPath);
             if (env.IsDevelopment())
             {
@@ -71,7 +78,14 @@ namespace EasyCode.WebApi
                 app.UseHsts();
             }
 
-            app.UseCors();
+            app.UseCors(option =>
+            {
+                option.AllowAnyOrigin();
+                option.AllowAnyMethod();
+                option.AllowAnyHeader();
+
+            });
+            
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
@@ -80,7 +94,7 @@ namespace EasyCode.WebApi
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            ConfigureEventBus(app);
+           // ConfigureEventBus(app);
         }
 
         protected virtual void ConfigureEventBus(IApplicationBuilder app)

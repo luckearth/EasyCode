@@ -36,10 +36,9 @@ namespace EasyCode.WebApi.Controllers
         private RequestHandlerService _handlerService;
         private ILogger _logger;
         private IEventBus _event;
-        public ValuesController(IEventBus eventBus,RequestHandlerService handlerService,ILogger<ValuesController> logger) 
+        public ValuesController(ILogger<ValuesController> logger) 
         {
-            _event = eventBus;
-            _handlerService = handlerService;
+           
             _logger = logger;
         }
         // GET api/values
@@ -61,9 +60,9 @@ namespace EasyCode.WebApi.Controllers
             product.ProductName = "ss";
             try
             {
-                var response = await _handlerService.GetResponseAsync<ProductRequest, ProductResponse>("Product", product);
+               // var response = await _handlerService.GetResponseAsync<ProductRequest, ProductResponse>("Product", product);
                 //Console.WriteLine("我已向队列发送数据");
-                return (response);
+                return (new ProductResponse());
             }
             catch (Exception e)
             {

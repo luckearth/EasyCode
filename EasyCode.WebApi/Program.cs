@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using Autofac.Extensions.DependencyInjection;
 using EasyCode.Entity;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace EasyCode.WebApi
 {
@@ -18,17 +14,17 @@ namespace EasyCode.WebApi
     {
         public static void Main(string[] args)
         {
-            var host=CreateWebHostBuilder(args).Build();
-
+            var host=CreateHostBuilder(args).Build();
             //正式环境请删除以下代码
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
                 {
+                    
                     var userManager = services.GetRequiredService<UserManager<SysUsers>>();
-                    var roleManager = services.GetRequiredService<RoleManager<SysRoles>>();
-                    ApiDbSeedData.Seed(userManager, roleManager).Wait();
+                    //var roleManager = services.GetRequiredService<RoleManager<SysRoles>>();
+                    ApiDbSeedData.Seed(userManager).Wait();
                 }
                 catch (Exception ex)
                 {
@@ -40,7 +36,7 @@ namespace EasyCode.WebApi
             host.Run();
         }
 
-        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -48,7 +44,8 @@ namespace EasyCode.WebApi
                         {
                             // Set properties and call methods on options
                         })
-                        .UseStartup<Startup>();
-                });
+                        .UseStartup<Startup>()
+                        .UseNLog();
+                }).UseServiceProviderFactory(new AutofacServiceProviderFactory());
     }
 }

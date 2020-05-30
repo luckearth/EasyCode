@@ -46,7 +46,7 @@ namespace EasyCode.EventBusRabbitMQ.CommandBus
             TaskCompletionSource<byte[]> tarray;
             if (_responseDictionary.TryRemove(eventArgs.BasicProperties.CorrelationId, out tarray))
             {
-               await Task.Run(() => tarray.SetResult(eventArgs.Body));
+               await Task.Run(() => tarray.SetResult(eventArgs.Body.ToArray()));
             }
             
         }
