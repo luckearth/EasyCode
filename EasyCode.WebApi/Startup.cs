@@ -41,6 +41,7 @@ namespace EasyCode.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddScoped<ISessionFactory, SessionFactory>();
             SessionFactory.AddDataSource(new DataSource()
             {
@@ -51,15 +52,8 @@ namespace EasyCode.WebApi
             });
             //services.AddIntegrationServices(Configuration)
             //        .AddEventBus(Configuration);
-            services.AddCors(options =>
-            {
-                options.AddPolicy("any", builder =>
-                {
-                    builder.WithMethods("GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS")
-                    //.AllowCredentials()//指定处理cookie
-                .AllowAnyOrigin(); //允许任何来源的主机访问
-                });
-            });
+           
+            services.ConfigureApplicationServices(Configuration);
             services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
@@ -78,14 +72,9 @@ namespace EasyCode.WebApi
                 app.UseHsts();
             }
 
-            app.UseCors(option =>
-            {
-                option.AllowAnyOrigin();
-                option.AllowAnyMethod();
-                option.AllowAnyHeader();
-
-            });
             
+
+
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseEndpoints(endpoints =>

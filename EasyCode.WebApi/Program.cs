@@ -23,7 +23,7 @@ namespace EasyCode.WebApi
                 {
                     
                     var userManager = services.GetRequiredService<UserManager<SysUsers>>();
-                    //var roleManager = services.GetRequiredService<RoleManager<SysRoles>>();
+                    var roleManager = services.GetRequiredService<RoleManager<SysRoles>>();
                     ApiDbSeedData.Seed(userManager).Wait();
                 }
                 catch (Exception ex)

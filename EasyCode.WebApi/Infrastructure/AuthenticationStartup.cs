@@ -30,7 +30,7 @@ namespace EasyCode.WebApi.Infrastructure
                 {
                     builder.AllowAnyHeader();
                     builder.AllowAnyMethod();
-                    builder.AllowAnyOrigin();
+                    builder.WithOrigins("http://localhost:5001");//新版不允许为空，正式环境要改为网址。
                     builder.AllowCredentials();
                 });
             });

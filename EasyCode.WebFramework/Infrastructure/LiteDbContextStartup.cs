@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using EasyCode.Core.Data;
+﻿using EasyCode.Core.Data;
 using EasyCode.Core.Data.Extensions;
 using EasyCode.Core.Infrastructure;
 using EasyCode.Data;
@@ -35,7 +32,7 @@ namespace EasyCode.WebFramework.Infrastructure
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequiredLength = 6;
-            }).AddEntityFrameworkStores<EasyCodeContext>();
+            }).AddRoles<SysRoles>().AddEntityFrameworkStores<EasyCodeContext>();
             
             services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
         }
