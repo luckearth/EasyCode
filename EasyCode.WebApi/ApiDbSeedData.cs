@@ -14,9 +14,9 @@ namespace EasyCode.WebApi
 
         }
 
-        public static async Task Seed(UserManager<SysUsers> userManager)
+        public static async Task Seed(UserManager<SysUsers> userManager, RoleManager<SysRoles> roleManager)
         {
-           // await SeedRolesAndClaims(userManager, roleManager);
+            await SeedRolesAndClaims(userManager, roleManager);
             await SeedAdmin(userManager);
         }
 
