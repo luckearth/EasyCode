@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Autofac;
+using EasyCode.Core.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,18 +15,12 @@ namespace EasyCode.Core.Infrastructure
     public interface IEngine
     {
         /// <summary>
-        /// Initialize engine
-        /// </summary>
-        /// <param name="services">Collection of service descriptors</param>
-        void Initialize(IServiceCollection services);
-
-        /// <summary>
         /// Add and configure services
         /// </summary>
         /// <param name="services">Collection of service descriptors</param>
-        /// <param name="configuration">Configuration root of the application</param>
-        /// <returns>Service provider</returns>
-        IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration);
+        /// <param name="configuration">Configuration of the application</param>
+        /// <param name="nopConfig">Nop configuration parameters</param>
+        void ConfigureServices(IServiceCollection services, IConfiguration configuration, LiteConfig liteConfig);
 
         /// <summary>
         /// Configure HTTP request pipeline
@@ -32,7 +28,6 @@ namespace EasyCode.Core.Infrastructure
         /// <param name="application">Builder for configuring an application's request pipeline</param>
         void ConfigureRequestPipeline(IApplicationBuilder application);
 
-        T Resolve<T>(string key = "");
         /// <summary>
         /// Resolve dependency
         /// </summary>
@@ -60,5 +55,12 @@ namespace EasyCode.Core.Infrastructure
         /// <param name="type">Type of service</param>
         /// <returns>Resolved service</returns>
         object ResolveUnregistered(Type type);
+
+        /// <summary>
+        /// Register dependencies
+        /// </summary>
+        /// <param name="containerBuilder">Container builder</param>
+        /// <param name="nopConfig">Nop configuration parameters</param>
+        void RegisterDependencies(ContainerBuilder containerBuilder, LiteConfig nopConfig);
     }
 }

@@ -23,7 +23,11 @@ namespace EasyCode.WebApi.Controllers
             _tokenProvider = tokenProvider;
             _userManager = userManager;
         }
-
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            return Ok("Hello");
+        }
         [AllowAnonymous]
         [HttpPost,Route("Login")]
         public async Task<IActionResult> PostLogin([FromBody]SysLoginViewModel model)

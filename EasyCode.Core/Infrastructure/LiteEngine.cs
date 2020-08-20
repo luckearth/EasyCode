@@ -19,20 +19,38 @@ namespace EasyCode.Core.Infrastructure
 {
     public class LiteEngine : IEngine
     {
+        #region Fields
+
+        private ITypeFinder _typeFinder;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets service provider
+        /// </summary>
         private IServiceProvider _serviceProvider { get; set; }
-        private IContainer _container;
-        public virtual IServiceProvider ServiceProvider => _serviceProvider;
+
+        #endregion
+
         #region Utilities
 
+        /// <summary>
+        /// Get IServiceProvider
+        /// </summary>
+        /// <returns>IServiceProvider</returns>
         protected IServiceProvider GetServiceProvider()
         {
-            var accessor = ServiceProvider.GetService<IHttpContextAccessor>();
-            var context = accessor.HttpContext;
-            return context != null ? context.RequestServices : ServiceProvider;
+            if (ServiceProvider == null)
+                return null;
+            var accessor = ServiceProvider?.GetService<IHttpContextAccessor>();
+            var context = accessor?.HttpContext;
+            return context?.RequestServices ?? ServiceProvider;
         }
 
         /// <summary>
-        /// 运行启动任务
+        /// Run startup tasks
         /// </summary>
         /// <param name="typeFinder">Type finder</param>
         protected virtual void RunStartupTasks(ITypeFinder typeFinder)
@@ -53,44 +71,33 @@ namespace EasyCode.Core.Infrastructure
         }
 
         /// <summary>
-        /// 注册依赖注入
+        /// Register dependencies
         /// </summary>
-        /// <param name="nopConfig">Startup Nop configuration parameters</param>
-        /// <param name="services">Collection of service descriptors</param>
-        /// <param name="typeFinder">Type finder</param>
-        protected virtual IServiceProvider RegisterDependencies(LiteConfig nopConfig, IServiceCollection services, ITypeFinder typeFinder)
+        /// <param name="containerBuilder">Container builder</param>
+        /// <param name="nopConfig">Nop configuration parameters</param>
+        public virtual void RegisterDependencies(ContainerBuilder containerBuilder, LiteConfig liteConfig)
         {
-            var containerBuilder = new ContainerBuilder();
-
             //register engine
             containerBuilder.RegisterInstance(this).As<IEngine>().SingleInstance();
 
             //register type finder
-            containerBuilder.RegisterInstance(typeFinder).As<ITypeFinder>().SingleInstance();
+            containerBuilder.RegisterInstance(_typeFinder).As<ITypeFinder>().SingleInstance();
 
             //find dependency registrars provided by other assemblies
-            var dependencyRegistrars = typeFinder.FindClassesOfType<IDependencyRegistrar>();
+            var dependencyRegistrars = _typeFinder.FindClassesOfType<IDependencyRegistrar>();
 
             //create and sort instances of dependency registrars
             var instances = dependencyRegistrars
-                //.Where(dependencyRegistrar => PluginManager.FindPlugin(dependencyRegistrar).Return(plugin => plugin.Installed, true)) //ignore not installed plugins
                 .Select(dependencyRegistrar => (IDependencyRegistrar)Activator.CreateInstance(dependencyRegistrar))
                 .OrderBy(dependencyRegistrar => dependencyRegistrar.Order);
 
             //register all provided dependencies
             foreach (var dependencyRegistrar in instances)
-                dependencyRegistrar.Register(containerBuilder, typeFinder, nopConfig);
-
-            //populate Autofac container builder with the set of registered service descriptors
-            containerBuilder.Populate(services);
-            _container = containerBuilder.Build();
-            //create service provider
-            _serviceProvider = new AutofacServiceProvider(_container);
-            return _serviceProvider;
+                dependencyRegistrar.Register(containerBuilder, _typeFinder, liteConfig);
         }
 
         /// <summary>
-        /// 注册配置自动映射
+        /// Register and configure AutoMapper
         /// </summary>
         /// <param name="services">Collection of service descriptors</param>
         /// <param name="typeFinder">Type finder</param>
@@ -115,16 +122,8 @@ namespace EasyCode.Core.Infrastructure
 
             //register
             AutoMapperConfiguration.Init(config);
-
         }
 
-        #endregion
-        /// <summary>
-        /// 当前域内所有dll
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             //check for assembly already loaded
@@ -134,19 +133,30 @@ namespace EasyCode.Core.Infrastructure
 
             //get assembly from TypeFinder
             var tf = Resolve<ITypeFinder>();
+            if (tf == null)
+                return null;
             assembly = tf.GetAssemblies().FirstOrDefault(a => a.FullName == args.Name);
             return assembly;
         }
 
+        #endregion
 
-        public IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        #region Methods
+
+        /// <summary>
+        /// Add and configure services
+        /// </summary>
+        /// <param name="services">Collection of service descriptors</param>
+        /// <param name="configuration">Configuration of the application</param>
+        /// <param name="nopConfig">Nop configuration parameters</param>
+        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, LiteConfig liteConfig)
         {
-            var typeFinder = new WebAppTypeFinder();
-            var startupConfigurations = typeFinder.FindClassesOfType<ILiteStartup>();
+            //find startup configurations provided by other assemblies
+            _typeFinder = new WebAppTypeFinder();
+            var startupConfigurations = _typeFinder.FindClassesOfType<ILiteStartup>();
 
             //create and sort instances of startup configurations
             var instances = startupConfigurations
-
                 .Select(startup => (ILiteStartup)Activator.CreateInstance(startup))
                 .OrderBy(startup => startup.Order);
 
@@ -155,39 +165,23 @@ namespace EasyCode.Core.Infrastructure
                 instance.ConfigureServices(services, configuration);
 
             //register mapper configurations
-            AddAutoMapper(services, typeFinder);
-
-            //register dependencies
-            var nopConfig = services.BuildServiceProvider().GetService<LiteConfig>();
-            RegisterDependencies(nopConfig, services, typeFinder);
+            AddAutoMapper(services, _typeFinder);
 
             //run startup tasks
-            if (!nopConfig.IgnoreStartupTasks)
-                RunStartupTasks(typeFinder);
+            RunStartupTasks(_typeFinder);
 
             //resolve assemblies here. otherwise, plugins can throw an exception when rendering views
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-
-
-            return _serviceProvider;
         }
 
-        public void Initialize(IServiceCollection services)
-        {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            //set base application path
-            var provider = services.BuildServiceProvider();
-            var hostingEnvironment = provider.GetRequiredService<IHostingEnvironment>();
-            var nopConfig = provider.GetRequiredService<LiteConfig>();
-            CommonHelper.BaseDirectory = hostingEnvironment.ContentRootPath;
-
-            //initialize plugins
-            var mvcCoreBuilder = services.AddMvcCore();
-            //PluginManager.Initialize(mvcCoreBuilder.PartManager, nopConfig);
-        }
+        /// <summary>
+        /// Configure HTTP request pipeline
+        /// </summary>
+        /// <param name="application">Builder for configuring an application's request pipeline</param>
         public void ConfigureRequestPipeline(IApplicationBuilder application)
         {
+            _serviceProvider = application.ApplicationServices;
+
             //find startup configurations provided by other assemblies
             var typeFinder = Resolve<ITypeFinder>();
             var startupConfigurations = typeFinder.FindClassesOfType<ILiteStartup>();
@@ -201,26 +195,46 @@ namespace EasyCode.Core.Infrastructure
             foreach (var instance in instances)
                 instance.Configure(application);
         }
+
+        /// <summary>
+        /// Resolve dependency
+        /// </summary>
+        /// <typeparam name="T">Type of resolved service</typeparam>
+        /// <returns>Resolved service</returns>
         public T Resolve<T>() where T : class
         {
-            return (T)GetServiceProvider().GetRequiredService(typeof(T));
+            return (T)Resolve(typeof(T));
         }
 
-        public T Resolve<T>(string key)
-        {
-            return _container.ResolveKeyed<T>(key);
-        }
+        /// <summary>
+        /// Resolve dependency
+        /// </summary>
+        /// <param name="type">Type of resolved service</param>
+        /// <returns>Resolved service</returns>
         public object Resolve(Type type)
         {
-            return GetServiceProvider().GetRequiredService(type);
+            var sp = GetServiceProvider();
+            if (sp == null)
+                return null;
+            return sp.GetService(type);
         }
 
-        public IEnumerable<T> ResolveAll<T>()
+        /// <summary>
+        /// Resolve dependencies
+        /// </summary>
+        /// <typeparam name="T">Type of resolved services</typeparam>
+        /// <returns>Collection of resolved services</returns>
+        public virtual IEnumerable<T> ResolveAll<T>()
         {
             return (IEnumerable<T>)GetServiceProvider().GetServices(typeof(T));
         }
 
-        public object ResolveUnregistered(Type type)
+        /// <summary>
+        /// Resolve unregistered service
+        /// </summary>
+        /// <param name="type">Type of service</param>
+        /// <returns>Resolved service</returns>
+        public virtual object ResolveUnregistered(Type type)
         {
             Exception innerException = null;
             foreach (var constructor in type.GetConstructors())
@@ -244,7 +258,19 @@ namespace EasyCode.Core.Infrastructure
                     innerException = ex;
                 }
             }
+
             throw new Exception("No constructor was found that had all the dependencies satisfied.", innerException);
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Service provider
+        /// </summary>
+        public virtual IServiceProvider ServiceProvider => _serviceProvider;
+
+        #endregion
     }
 }

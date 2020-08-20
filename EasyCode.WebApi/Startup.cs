@@ -5,7 +5,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using EasyCode.Core.Configuration;
 using EasyCode.Core.Data.DapperExtensions;
+using EasyCode.Core.Infrastructure;
 using EasyCode.EventBus;
 using EasyCode.EventBus.Abstractions;
 using EasyCode.EventBusRabbitMQ;
@@ -31,6 +33,8 @@ namespace EasyCode.WebApi
 {
     public class Startup
     {
+        private IEngine _engine;
+        private LiteConfig _nopConfig;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -52,15 +56,18 @@ namespace EasyCode.WebApi
             });
             //services.AddIntegrationServices(Configuration)
             //        .AddEventBus(Configuration);
-           
-            services.ConfigureApplicationServices(Configuration);
+
+            (_engine, _nopConfig) = services.ConfigureApplicationServices(Configuration);
             services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
-
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            _engine.RegisterDependencies(builder, _nopConfig);
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
+            EngineContext.Current.ConfigureRequestPipeline(app);
             LayoutRenderer.Register("basedir", (logEvent) => env.ContentRootPath);
             if (env.IsDevelopment())
             {
