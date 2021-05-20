@@ -153,6 +153,7 @@ namespace EasyCode.Core.Data
 
         public void Update(TEntity entity)
         {
+            var status = _context.Entry(entity).State;
             Entities.Update(entity);
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using EasyCode.Core;
 using EasyCode.Core.Data;
 using EasyCode.Data;
@@ -18,10 +19,26 @@ namespace EasyCode.Service
     {
         private TokenProviderOptions _options;
         private IUnitOfWork<EasyCodeContext> _unitOfWork;
+        private IRepository<SysApplication> _repository;
         public TokenProviderService(TokenProviderOptions options, IUnitOfWork<EasyCodeContext> unitOfWork)
         {
             _options = options;
             _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.GetRepository<SysApplication>();
+        }
+        public async Task<SysApplication> GetApplicationAsync()
+        {
+            return await _repository.FirstAsync(a=>a.Id=="1");
+        }
+        public async Task AddApplication(SysApplication application)
+        {
+            await _repository.AddAsync(application);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task UpdateApplication(SysApplication application)
+        {
+            _repository.Update(application);
+            await _unitOfWork.SaveChangesAsync();
         }
         public ResponseTokenViewModel GeTokenViewModel(string username,string userid)
         {

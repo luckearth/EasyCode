@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using EasyCode.Entity;
 using EasyCode.ViewModel;
 
 namespace EasyCode.IService
 {
     public interface ITokenProviderService
     {
+        Task<SysApplication> GetApplicationAsync();
+        Task UpdateApplication(SysApplication application);
+        Task AddApplication(SysApplication application);
         /// <summary>
         /// 获取token
         /// </summary>

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.PlatformAbstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -36,7 +35,7 @@ namespace EasyCode.Core.Infrastructure
         /// <returns>The physical path. E.g. "c:\inetpub\wwwroot\bin"</returns>
         public virtual string GetBinDirectory()
         {
-            return PlatformServices.Default.Application.ApplicationBasePath;
+            return AppContext.BaseDirectory;
         }
 
         public override IList<Assembly> GetAssemblies()
