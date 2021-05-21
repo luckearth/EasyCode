@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using EasyCode.Data;
 using EasyCode.Entity;
 using EasyCode.IService;
 using EasyCode.ViewModel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -28,16 +30,25 @@ namespace EasyCode.Service
         }
         public async Task<SysApplication> GetApplicationAsync()
         {
-            return await _repository.FirstAsync(a=>a.Id=="1");
+            return await _repository.FindAsync("1");
+        }
+        public async Task<IEnumerable<SysApplication>> GetApplicationsAsync()
+        {
+            return await _repository.Query().ToListAsync();
         }
         public async Task AddApplication(SysApplication application)
         {
             await _repository.AddAsync(application);
             await _unitOfWork.SaveChangesAsync();
         }
-        public async Task UpdateApplication(SysApplication application)
+        public async Task UpdateApplication(IEnumerable<SysApplication> applications)
         {
-            _repository.Update(application);
+            var app = await GetApplicationAsync();
+            foreach (var application in applications)
+            {
+                application.CreateTime=DateTime.Now;
+                _repository.Update(application);
+            }
             await _unitOfWork.SaveChangesAsync();
         }
         public ResponseTokenViewModel GeTokenViewModel(string username,string userid)
@@ -80,5 +91,7 @@ namespace EasyCode.Service
             var model = GeTokenViewModel("","");
             return model;
         }
+
+       
     }
 }

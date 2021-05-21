@@ -60,7 +60,7 @@ namespace EasyCode.WebApi.Controllers
             product.ProductName = "ss";
             try
             {
-                var response = await _handlerService.GetResponseAsync<ProductRequest, ProductResponse>("Product", product);
+                //var response = await _handlerService.GetResponseAsync<ProductRequest, ProductResponse>("Product", product);
                 //Console.WriteLine("我已向队列发送数据");
                 return (new ProductResponse());
             }

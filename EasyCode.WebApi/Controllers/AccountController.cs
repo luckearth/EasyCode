@@ -26,9 +26,9 @@ namespace EasyCode.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            SysApplication application =await _tokenProvider.GetApplicationAsync();
-            application.CreateTime = DateTime.Now;
-            await _tokenProvider.UpdateApplication(application);
+            var applications =await _tokenProvider.GetApplicationsAsync();
+            
+            await _tokenProvider.UpdateApplication(applications);
             return Ok("Hello");
         }
         [AllowAnonymous]

@@ -9,8 +9,9 @@ namespace EasyCode.IService
 {
     public interface ITokenProviderService
     {
+        Task<IEnumerable<SysApplication>> GetApplicationsAsync();
         Task<SysApplication> GetApplicationAsync();
-        Task UpdateApplication(SysApplication application);
+        Task UpdateApplication(IEnumerable<SysApplication> applications);
         Task AddApplication(SysApplication application);
         /// <summary>
         /// 获取token

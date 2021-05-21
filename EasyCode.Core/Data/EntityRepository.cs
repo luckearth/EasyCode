@@ -105,16 +105,15 @@ namespace EasyCode.Core.Data
 
         public async Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await Entities.AsNoTracking().FirstOrDefaultAsync(predicate);
+            return await Query().FirstOrDefaultAsync(predicate);
         }
 
         public IQueryable<TEntity> FromSql(string sql, params object[] parameters)
         {
-
-            return Entities.FromSqlRaw(sql, parameters);
+            return Entities.FromSqlRaw(sql, parameters).AsNoTracking();
         }
 
-        public async Task<List<TEntity>> ListAsync() => await Entities.AsNoTracking().ToListAsync();
+        public async Task<List<TEntity>> ListAsync() => await Query().ToListAsync();
 
         public PagedList<TEntity> GetPaged<PEntity>(Expression<Func<TEntity, PEntity>> sortBy, int pageIndex, int pageSize)
         {
@@ -133,10 +132,10 @@ namespace EasyCode.Core.Data
 
         public IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> predicate)
         {
-            return Entities.AsNoTracking().Where(predicate);
+            return Query().Where(predicate);
         }
 
-        public async Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate) => await Entities.SingleOrDefaultAsync(predicate);
+        public async Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate) => await Query().SingleOrDefaultAsync(predicate);
 
         public TEntity Update(TEntity entity, params Expression<Func<TEntity, object>>[] expressions)
         {
@@ -150,16 +149,18 @@ namespace EasyCode.Core.Data
             }
             return entity;
         }
-
+        /// <summary>
+        /// 同一个请求中假如更新一条数据有多次取出，则需要所有取出都为同一个状态（NoTracking 或 Tracking) 否则更新会出错
+        /// </summary>
+        /// <param name="entity"></param>
         public void Update(TEntity entity)
         {
-            var status = _context.Entry(entity).State;
             Entities.Update(entity);
         }
 
         public async Task<List<TEntity>> ListAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await Entities.AsNoTracking().Where(predicate).ToListAsync();
+            return await Query().Where(predicate).ToListAsync();
         }
     }
 }
